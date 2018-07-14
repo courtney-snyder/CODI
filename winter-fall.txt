@@ -1,0 +1,36 @@
+Blazer, black dress, black flats
+Blazer, patterned dress, black tights, black flats
+Blazer, patterned dress, nude tights, black flats
+Blazer, patterned dress, no tights, nude flats
+Blazer, patterned dress, nude tights, nude flats
+Blazer, white shell, black pants, necklace, black flats
+Blazer, white shell, colorful pants, black flats
+Blazer, white shell, colorful pants, nude flats
+Blazer, white shell, patterned scarf, black pants, black flats
+Blazer, white shell, patterned skirt, black tights, black flats
+Blazer, white shell, patterned skirt, nude tights, black flats
+Cardigan, black dress, nude tights, black flats
+Cardigan, black dress, no tights, black flats
+Cardigan, belt, black dress, no tights, nude flats
+Cardigan, belt, black dress, nude tights, nude flats
+Cardigan, colorful blouse, black pants, black flats
+Cardigan, colorful blouse, patterned skirt, belt, nude flats
+Cardigan, patterened blouse, black pants, black flats
+Cardigan, patterned dress, brown belt, no tights, nude flats
+Cardigan, patterned dress, brown belt, nude tights, nude flats
+Cardigan, white shell, colorful pants, black flats
+Colorful blouse, black dress, no tights, black flats
+Colorful blouse, black dress, nude tights, black flats
+Colorful blouse, black pants, patterned flats
+Colorful blouse, black skirt, tights, patterned flats
+Colorful blouse, colorful pants, brown belt, nude flats
+Colorful blouse, patterned skirt, brown belt, nude flats
+Colorful blouse, sweater, black pants, patterned flats
+Patterned blouse, black dress, black flats
+Patterned blouse, colorful pants, black flats
+Patterned blouse, sweater, colorful pants, patterned flats
+Sweater, patterned dress, black scarf, black tights, black flats
+Sweater, patterned dress, black scarf, nude tights, black flats
+Sweater, patterned skirt, black flats
+Sweater, black dress, patterned scarf, black flats, black tights
+Sweater, black dress, patterned scarf, black flats, nude tights

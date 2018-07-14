@@ -1,0 +1,23 @@
+Blazer, patterned shell, black pants, black flats
+Blazer, patterned shell, black skirt, black flats
+Blazer, patterned dress, belt, black flats
+Blazer, patterned dress, belt, nude flats
+Blazer, colorful blouse, black pants, black flats
+Blazer, colorful blouse, black skirt, black flats
+Blazer, patterned shell, white pants, nude flats
+Blazer, white blouse, black pants, nude flats
+Blazer, white blouse, black skirt, nude flats
+Blazer, white blouse, colorful skirt, nude flats
+Cardigan, patterned dress, belt, nude flats
+Cardigan, patterned shell, black pants, black flats
+Cardigan, patterned shell, black skirt, black flats
+Cardigan, patterned shell, white pants, belt, nude flats
+Cardigan, white shell, belt, black pants, black flats
+Cardigan, white shell, belt, black skirt, black flats
+Colorful blouse, black pants, belt, black flats
+Colorful blouse, black skirt, belt, black flats
+Colorful shirt, white pants, nude flats
+Patterned dress, belt, nude flats
+Patterned shell, white pants, nude flats
+Patterned shell, colorful skirt, belt, black flats
+Patterened shell, colorful skirt, nude flats
