@@ -12,326 +12,162 @@ Winter/Fall: http://outfitposts.com/2015/12/outfit-post-fallwinter-business-casu
 Summer/Spring: http://outfitposts.com/2015/08/one-suitcase-summer-business-casual_12.html
 */
 
-#define WEEK_LENGTH 5 //Number of outfits needed for a week
-#define summer_spring "summer-spring.txt" //Filename for summer and spring outfits
-#define winter_fall "winter-fall.txt" //Filename for winter and fall outfits
-#define to_wear "to-wear.txt" //Filename for chosen outfits
-
-#include <ctime>
-#include <iostream>
-#include <fstream>
-#include <stdlib.h>
-#include <string>
-#include <time.h>
-#include <windows.h>
-
-using std::cin;
-using std::cout;
-using std::endl;
-using std::getline;
-using std::ifstream;
-using std::ofstream;
-using std::string;
-
-void setcolor(unsigned short color)                 
-{
-	HANDLE hcon = GetStdHandle(STD_OUTPUT_HANDLE);
-	SetConsoleTextAttribute(hcon, color);
-}
-
-typedef enum Season
-{
-	Fall = 14, Winter = 11, Spring = 10, Summer = 12, None = 15
-};
-
-bool isValid(int current_index, int used_indexes[WEEK_LENGTH], int random_index)
-{
-	for (int k = 0; k < current_index; k++)
-	{
-		if (random_index == used_indexes[k] || random_index == used_indexes[k] + 1 || random_index == used_indexes[k] + 1)
-			return false;
-	}
-	return true;
-}
-
-string getSeasonString(int m)
-{
-	string season = "";
-	switch (m)
-	{
-		default: //Dec
-			season = "Winter";
-			break;
-		case 0: //Jan
-		case 1: //Feb
-			season = "Winter";
-			break;
-		case 2: //Mar
-		case 3: //Apr
-		case 4: //May
-			season = "Spring";
-			break;
-		case 5: //June
-		case 6: //July
-		case 7: //Aug
-			season = "Summer";
-			break;
-		case 8: //Sept
-		case 9: //Oct
-		case 10: //Nov
-			season = "Fall";
-			break;
-	}
-	return season;
-}
-
-string getDayString(int d)
-{
-	string day = "";
-	switch (d)
-	{
-		case 0: day = "Sunday";
-			break;
-		case 1: day = "Monday";
-			break;
-		case 2: day = "Tuesday";
-			break;
-		case 3: day = "Wednesday";
-			break;
-		case 4: day = "Thursday";
-			break;
-		case 5: day = "Friday";
-			break;
-		case 6: day = "Saturday";
-			break;
-	}
-	return day;
-}
+#include "functions.h"
 
 int main()
 {
+	//"Global" variables
 	char season = '\0';
-	string total_outfits[180], weekly_outfits[WEEK_LENGTH];
-	ifstream is; //Will be summer_spring or winter_fall
-	ofstream os; //Will write or append outfits to this file
-	int used_indexes[WEEK_LENGTH]; //Will help duplicate/similar outfits occur less in a week
+	int loaded_outfits = 0; //Number of outfits loaded from the text file
+	Outfit total_outfits[MAX_OUTFITS]; //Stores outfit descriptions & number of times worn
+	string current_file = "";
+	ifstream is; //Reader
+	ofstream os; //Writer
 
 	srand(time(NULL));
+	setcolor(Season::None);
 
-	cout << "Welcome to Courtney's Outfit Decider for the Indecisive (CODI)!" << endl;
-	cout << "This app will pick " << WEEK_LENGTH <<  " outfits out for you." << endl;
+	std::time_t t = std::time(0); //Get time now
+	std::tm* now = std::localtime(&t);
+
+	cout << "Welcome to Courtney's Outfit Decider for the Indecisive (CODI)!" << endl << endl;
+
 	
-	if (WEEK_LENGTH < 6)
-		cout << "Looks like you're on your own for the weekend." << endl;
+	/*cout << "What would you like to do?\n1. Pick my outfits randomly\n2. Pick my outfits based on previously worn outfits\n3. Remind me what was previously picked out for me\n\n";
 
-	cout << endl;
+	int option = 0;
+	cin >> option;
+	
+	while (option > 3 || option < 1)
+	{
+		cout << option << " is not valid.\n1. Pick my outfits based on previously worn outfits\n2. Pick my outfits randomly\n3. Remind me what was previously picked out for me\n\n";
+		cin >> option;
+	}
+
+	switch (option)
+	{
+	case 1:
+		run_random();
+	case 2:
+		break;
+	case 3:
+		break;
+	}*/
+
+	cout << "This app will pick " << WEEK_LENGTH <<  " outfits out for you." << endl << endl;
 
 	//Determine what season it is
-	cout << "What season is it?" << endl << "S = ";
-	setcolor(Season::Summer);
-	cout << "Summer";
-	setcolor(Season::None);
-	cout << " or ";
-	setcolor(Season::Spring);
-	cout << "Spring" << endl;
-	setcolor(Season::Fall);
-	cout << "F = Fall" << endl;
-	setcolor(Season::Winter);
-	cout << "W = Winter" << endl;
-	setcolor(Season::None);
+	printSeasons();
+	season = getSeason();
+	printSeason(season);
 
-	cin >> season;
-	while (season != 'S' && season != 's' && season != 'W' && season != 'w' && season != 'F' && season != 'f' )
-	{
-		cout << season << " is an invalid input. Enter S for Spring/Summer, W or F for Winter/Fall." << endl;
-		cin >> season;
-	}
+	//Get a file from the user
+	cout << "Enter the name of the text file that contains your outfits or use " << getDefaultFile(season) << endl << endl;
+	cout << "E = enter new text file. NOTE: This file must exist in the project folder." << endl;
+	cout << "Any key = use '" << getDefaultFile(season) << "'" << endl << endl;
 
-	cout << endl << "It is: ";
+	char choice = '\0';
+	string name = "";
 
-	//User selected Summer or Spring
-	if (season == 'S' || season == 's')
-	{
-		setcolor(Season::Summer);
-		cout << "Summer";
-		setcolor(Season::None);
-		cout << " or ";
-		setcolor(Season::Spring);
-		cout << "Spring!" << endl;
-		setcolor(Season::None);
+	cin >> choice;
 
-		is.open(summer_spring);
+	//Get a valid file from the user
+	if (choice == 'E' || choice == 'e')
+		current_file = getFileName();
 
-		//Check that the outfit file opened properly
-		if (!is)
-			cout << "Failed to load summer and spring outfit file: '" << summer_spring << "'" << endl;
+	//Use the default file for the chosen season
+	else
+		current_file = getDefaultFile(season);
 
-		else
-		{
-			cout << "Successfully loaded summer and spring outfit file: '" << summer_spring << "'!" << endl;
-			string temp = "";
-			int i = 0;
-			while (is)
-			{
-				//Read each outfit
-				getline(is, temp, '\n');
+	//Open the outfit file
+	is.open(current_file);
 
-				//Store in the total_outfit array
-				total_outfits[i] = temp;
-				i++;
-			}
-			char choice = '\0';
-			cout << "Loaded " << i << " outfits from " << summer_spring << endl;
-			cout << "Found previous outfit file " << to_wear << ". Enter A to append new outfits to this file or O to overwrite the file." << endl;
-			cin >> choice;
-			while (choice != 'A' && choice != 'a' && choice != 'O' && choice != 'o')
-			{
-				cout << choice << " is an invalid choice. Enter A to append new outfits to this file or O to overwrite the file." << endl;
-				cin >> choice;
-			}
+	//Check that the outfit file opened properly
+	if (!is)
+		cout << "Failed to load " << getSeasonString(season) << " outfit file: '" << current_file << "'" << endl;
 
-			if (choice == 'A' || choice == 'a')
-				os.open(to_wear, std::ofstream::app);
-			else
-				os.open(to_wear);
-
-			is.close();
-
-			std::time_t t = std::time(0);   // get time now
-			std::tm* now = std::localtime(&t);
-
-			//Write today's date on the file so user remembers when they previously used this
-			string day = getDayString(now->tm_wday);
-			string season = getSeasonString(now->tm_mon);
-
-			cout << endl << day << ", " << season << ' ' << (now->tm_mon + 1) << '-' << now->tm_mday << '-' << (now->tm_year + 1900) << endl;
-			os << day << ", " << season << ' ' << (now->tm_mon + 1) << '-' << now->tm_mday << '-' << (now->tm_year + 1900) << endl;
-
-			for (int j = 0; j < WEEK_LENGTH; j++)
-			{
-				//Get a random outfit of the i outfits loaded into the total_outfit array
-				int index = rand() % i;
-				
-				bool isUnique = isValid(j, used_indexes, index);
-
-				//Make sure that index + or - 1 has not already been used
-				while (!isUnique)
-				{
-					index = rand() % i;
-					isUnique = isValid(j, used_indexes, index);
-				}
-
-				//Add index to used_indexes array
-				used_indexes[j] = index;
-
-				//Select outfit
-				weekly_outfits[j] = total_outfits[index];
-
-				//Show user now
-				cout << "Outfit " << j + 1 << ": " << weekly_outfits[j] << endl;
-
-				//Store in text file
-				os << "Outfit " << j + 1 << ": " << weekly_outfits[j] << endl;
-			}
-
-			os.close();
-			cout << "Selected " << WEEK_LENGTH << " outfits. Outfits are stored in " << to_wear << endl;
-		}
-	}
-
-	//User selected Winter or Fall
 	else
 	{
-		if (season == 'F' || season == 'f')
-		{
-			setcolor(Season::Fall);
-			cout << "Fall!" << endl;
-			setcolor(Season::None);
-		}
-		else
-		{
-			setcolor(Season::Winter);
-			cout << "Winter!" << endl;
-			setcolor(Season::None);
-		}
-		
-		is.open(winter_fall);
-		
-		//Check that the outfit file opened properly
-		if (!is)
-			cout << "Failed to load winter and fall outfit file: '" << winter_fall << "'" << endl;
-		
-		else
-		{
-			cout << "Successfully loaded winter and fall outfit file: '" << winter_fall << "'!" << endl;
-			string temp = "";
-			int i = 0;
-			while (is)
-			{
-				//Read each outfit
-				getline(is, temp, '\n');
+		cout << "Successfully loaded " << getSeasonString(season) << " outfit file: '" << current_file << "'!" << endl;
+		string temp = "";
+		int i = 0;
 
-				//Store in the total_outfit array
-				total_outfits[i] = temp;
-				i++;
-			}
-			char choice = '\0';
-			cout << "Loaded " << i << " outfits from " << summer_spring << endl;
-			cout << "Found previous outfit file " << to_wear << ". Enter A to append new outfits to this file or O to overwrite the file." << endl;
+		//Parse the outfit file
+		while (is)
+		{
+			//Read each outfit
+			getline(is, temp, '\n');
+
+			//Store in the total_outfit array, init times worn to 0
+			total_outfits[i].outfit = temp;
+			total_outfits[i].times_worn = 0;
+
+			i++;
+		}
+		
+		loaded_outfits = i;
+
+		char choice = '\0';
+
+		cout << "Loaded " << loaded_outfits << " outfits from " << current_file << endl;
+		cout << "Enter V to view all loaded outfits or any other character to continue." << endl << endl;
+		
+		cin >> choice;
+		
+		if (choice == 'V' || choice == 'v')
+			printAllOutfits(total_outfits, loaded_outfits);
+
+		system("pause");
+		system("cls");
+
+		cout << "Found previous outfit file '" << to_wear << "'. Enter A to append new outfits to this file or O to overwrite the file." << endl;
+		cin >> choice;
+		while (choice != 'A' && choice != 'a' && choice != 'O' && choice != 'o')
+		{
+			cout << choice << " is an invalid choice. Enter A to append new outfits to this file or O to overwrite the file." << endl;
 			cin >> choice;
-			while (choice != 'A' && choice != 'a' && choice != 'O' && choice != 'o')
-			{
-				cout << choice << " is an invalid choice. Enter A to append new outfits to this file or O to overwrite the file." << endl;
-				cin >> choice;
-			}
-
-			if (choice == 'A' || choice == 'a')
-				os.open(to_wear, std::ofstream::app);
-			else
-				os.open(to_wear);
-
-			is.close();
-
-			std::time_t t = std::time(0);   // get time now
-			std::tm* now = std::localtime(&t);
-
-			//Write today's date on the file so user remembers when they previously used this
-			string day = getDayString(now->tm_wday);
-			string season = getSeasonString(now->tm_mon);
-
-			cout << endl << day << ", " << season << ' ' << (now->tm_mon + 1) << '-' << now->tm_mday << '-' << (now->tm_year + 1900) << endl;
-			os << day << ", " << season << ' ' << (now->tm_mon + 1) << '-' << now->tm_mday << '-' << (now->tm_year + 1900) << endl;
-
-			for (int j = 0; j < WEEK_LENGTH; j++)
-			{
-				//Get a random outfit of the i outfits loaded into the total_outfit array
-				int index = rand() % i;
-
-				bool isUnique = isValid(j, used_indexes, index);
-
-				//Make sure that index + or - 1 has not already been used
-				while (!isUnique)
-				{
-					index = rand() % i;
-					isUnique = isValid(j, used_indexes, index);
-				}
-
-				//Add index to used_indexes array
-				used_indexes[j] = index;
-
-				//Select outfit
-				weekly_outfits[j] = total_outfits[index];
-
-				//Show user now
-				cout << "Outfit " << j + 1 << ": " << weekly_outfits[j] << endl;
-
-				//Store in text file
-				os << "Outfit " << j + 1 << ": " << weekly_outfits[j] << endl;
-			}
-
-			os.close();
-			cout << "Selected " << WEEK_LENGTH << " outfits. Outfits are stored in " << to_wear << endl;
 		}
+
+		if (choice == 'A' || choice == 'a')
+			os.open(to_wear, std::ofstream::app);
+		else
+			os.open(to_wear);
+
+		is.close();
+
+		//Write today's date on the file so user remembers when they previously used this
+		string day = getDayString(now->tm_wday);
+		string sSeason = getSeasonString(now->tm_mon);
+
+		cout << endl << day << ", " << sSeason << ' ' << (now->tm_mon + 1) << '-' << now->tm_mday << '-' << (now->tm_year + 1900) << endl;
+		os << day << ", " << sSeason << ' ' << (now->tm_mon + 1) << '-' << now->tm_mday << '-' << (now->tm_year + 1900) << endl;
+
+		for (int j = 0; j < WEEK_LENGTH; j++)
+		{
+			//Get a random outfit of the i outfits loaded into the total_outfit array
+			int index = rand() % i;
+			bool isUnique = isOutfitValid(total_outfits, loaded_outfits, j, index);
+
+			//Make sure that index + or - 1 has not already been used
+			while (!isUnique)
+			{
+				index = rand() % i;
+				isUnique = isOutfitValid(total_outfits, loaded_outfits, j, index);
+			}
+
+			//Select outfit
+			total_outfits[index].times_worn++;
+
+			//Show user now
+			cout << "Outfit " << j + 1 << ": " << total_outfits[index].outfit << endl;
+
+			//Store in text file
+			os << "Outfit " << j + 1 << ": " << total_outfits[index].outfit << endl;
+		}
+
+		os.close();
+		cout << "Selected " << WEEK_LENGTH << " outfits. Outfits are stored in '" << to_wear << "'" << endl << endl;
+		printAllOutfits(total_outfits, loaded_outfits);
 	}
 
 	return 0;
