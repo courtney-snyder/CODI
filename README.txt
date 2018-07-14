@@ -1,4 +1,4 @@
-Hello, thanks for using Courtney's Outfit Decider for the Indecisive (COD)I! Here are a few tips to help you personalize the content and behavior of this app.
+Hello, thanks for using Courtney's Outfit Decider for the Indecisive (CODI)! Here are a few tips to help you personalize the content and behavior of this app.
 
 Adding outfits to existing files:
 Feel free to add your own outfits to the existing summer-spring and winter-fall text files.
